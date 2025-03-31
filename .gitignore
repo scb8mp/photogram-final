@@ -41,6 +41,5 @@ examples.txt
 !/db/*.sqlite3
 !/db/*.sqlite3-journal
 
-# Ignore image uploads
-public/uploads/
-uploads/
+# Ignore public uploads
+/public/uploads/*

@@ -1,2 +1,31 @@
-<h1>Users#index</h1>
-<p>Find me in app/views/users/index.html.erb</p>
+<table>
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Private?</th>
+      <th>Follow Status</th> <!-- Add this header -->
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.username %></td>
+        <td><%= user.private? ? "Yes" : "No" %></td>
+        <td>
+          <% if current_user != user %>
+            <% if current_user.following?(user) %>
+              <%= button_to "Unfollow", "/delete_followrequest/#{FollowRequest.find_by(sender: current_user, recipient: user).id}", method: :get %>
+            <% else %>
+              <%= form_with url: "/insert_followrequest", method: :post, local: true do |f| %>
+                <%= hidden_field_tag :query_sender_id, current_user.id %>
+                <%= hidden_field_tag :query_recipient_id, user.id %>
+                <%= hidden_field_tag :query_status, "accepted" %>
+                <%= f.button "Follow" %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

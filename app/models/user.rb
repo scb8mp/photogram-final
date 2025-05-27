@@ -30,4 +30,21 @@ class User < ApplicationRecord
          has_many  :followrequests, class_name: "Followrequest", foreign_key: "recipient_id", dependent: :destroy
          has_many  :likes, class_name: "Like", foreign_key: "fan_id", dependent: :destroy
          has_many  :photos, class_name: "Photo", foreign_key: "owner_id", dependent: :destroy
+
+         
+has_many :sent_follow_requests, class_name: "FollowRequest", foreign_key: "sender_id"
+has_many :followed_users, through: :sent_follow_requests, source: :recipient
+
+
+has_many :received_follow_requests, class_name: "FollowRequest", foreign_key: "recipient_id"
+has_many :followers, through: :received_follow_requests, source: :sender
+
+def following?(other_user)
+  FollowRequest.exists?(
+    sender_id: self.id,
+    recipient_id: other_user.id,
+    status: "accepted"
+  )
+end
+
 end

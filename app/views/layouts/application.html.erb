@@ -2,25 +2,32 @@
 <html>
   <head>
     <title>Photogram Final</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-
-    <h1>Welcome to Photogram</h1>
-
-<ul>
-  <li><a href="/users">All users</a></li>
-  <li><a href="/photos">All public photos</a></li>
-
-  <% if user_signed_in? %>
-    <li><a rel="nofollow" data-method="delete" href="/users/sign_out">Sign out</a></li>
-  <% else %>
-    <li><a href="/users/sign_in">Sign in</a></li>
-    <li><a href="/users/sign_up">Sign up</a></li>
-  <% end %>
-</ul>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
 
   <body>
+    <h1>Welcome to Photogram</h1>
+
+    <ul>
+      <li><a href="/users">All users</a></li>
+      <li><a href="/photos">All public photos</a></li>
+
+      <% if user_signed_in? %>
+        <li><a href="/users/sign_out">Sign out</a></li>
+      <% else %>
+        <li><a href="/users/sign_in">Sign in</a></li>
+        <li><a href="/users/sign_up">Sign up</a></li>
+      <% end %>
+    </ul>
+
+    <% if notice %>
+      <p class="flash notice"><%= notice %></p>
+    <% end %>
+
+    <% if alert %>
+      <p class="flash alert"><%= alert %></p>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>

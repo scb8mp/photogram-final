@@ -1,131 +1,90 @@
-<div>
-  <div>
-    <h1>
-      Photo #<%= @the_photo.id %> details
-    </h1>
+<h1>Photo Details</h1>
 
+<dl>
+  <dt>Caption</dt>
+  <dd><%= @photo.caption %></dd>
+
+  <dt>Image</dt>
+  <dd>
+    <% if @photo.image.present? %>
+      <%= image_tag @photo.image_url %>
+    <% else %>
+      <p>No image uploaded</p>
+    <% end %>
+  </dd>
+
+  <dt>Owner</dt>
+  <dd><%= @photo.owner.username if @photo.owner.present? %></dd>
+
+  <dt>Likes</dt>
+  <dd><%= @photo.likes_count || 0 %></dd>
+
+  <dt>Comments</dt>
+  <dd><%= @photo.comments_count || 0 %></dd>
+
+  <dt>Posted</dt>
+  <dd><%= time_ago_in_words(@photo.created_at) %> ago</dd>
+</dl>
+<% if @photo.owner_id == current_user.id %>
+  <p>
+    <%= link_to "Delete this photo", "/delete_photo/#{@photo.id}" %>
+  </p>
+<% end %>
+
+<h2>Comments</h2>
+<ul>
+  <% @photo.comments.each do |comment| %>
+    <li><strong><%= comment.author.username %>:</strong> <%= comment.body %></li>
+  <% end %>
+</ul>
+
+<% if @photo.owner_id == current_user.id %>
+  <hr>
+  <h2>Update Photo</h2>
+
+  <form action="/modify_photo/<%= @photo.id %>" method="post" enctype="multipart/form-data">
     <div>
-      <div>
-        <a href="/photos">
-          Go back
-        </a>
-      </div>
-
-      <div>
-        <a href="/delete_photo/<%= @the_photo.id %>">
-          Delete photo
-        </a>
-      </div>
+      <label for="image_box">
+        Image
+      </label>
+      <input type="file" id="image_box" name="query_image">
     </div>
 
-    <dl>
-      <dt>
+    <div>
+      <label for="caption_box">
         Caption
-      </dt>
-      <dd>
-        <%= @the_photo.caption %>
-      </dd>
+      </label>
+      <textarea id="caption_box" name="query_caption" rows="3"><%= @photo.caption %></textarea>
+    </div>
 
-      <dt>
-        Comments count
-      </dt>
-      <dd>
-        <%= @the_photo.comments_count %>
-      </dd>
+    <input type="hidden" name="query_comments_count" value="<%= @photo.comments_count %>">
+    <input type="hidden" name="query_owner_id" value="<%= @photo.owner_id %>">
+    <input type="hidden" name="query_likes_count" value="<%= @photo.likes_count %>">
 
-      <dt>
-        Image
-      </dt>
-      <dd>
-        <%= @the_photo.image %>
-      </dd>
-
-      <dt>
-        Owner
-      </dt>
-      <dd>
-        <%= @the_photo.owner_id %>
-      </dd>
-
-      <dt>
-        Likes count
-      </dt>
-      <dd>
-        <%= @the_photo.likes_count %>
-      </dd>
-
-      <dt>
-        Created at
-      </dt>
-      <dd>
-        <%= time_ago_in_words(@the_photo.created_at) %> ago
-      </dd>
-
-      <dt>
-        Updated at
-      </dt>
-      <dd>
-        <%= time_ago_in_words(@the_photo.updated_at) %> ago
-      </dd>
-    </dl>
-  </div>
-</div>
+    <button>
+      Update photo
+    </button>
+  </form>
+<% end %>
 
 <hr>
+<h2>Like this photo</h2>
+
+<form action="/insert_like" method="post">
+  <input type="hidden" name="photo_id" value="<%= @photo.id %>">
+  <input type="hidden" name="fan_id" value="<%= current_user.id %>">
+
+  <button>
+    Like
+  </button>
+</form>
+<% existing_like = Like.find_by(photo_id: @photo.id, fan_id: current_user.id) %>
+
+<% if existing_like.present? %>
+  <p>
+    <%= link_to "Unlike", "/delete_like/#{existing_like.id}" %>
+  </p>
+<% end %>
 
 
-<div>
-  <div>
-    <h2>
-      Edit photo
-    </h2>
-
-    <form action="/modify_photo/<%= @the_photo.id %>"  method="post" >
-      <div>
-        <label for="caption_box">
-          Caption
-        </label>
-
-        <textarea id="caption_box" name="query_caption"><%= @the_photo.caption %></textarea>
-      </div>
-
-      <div>
-        <label for="comments_count_box">
-          Comments count
-        </label>
-
-        <input type="text" id="comments_count_box" name="query_comments_count" value="<%= @the_photo.comments_count %>">
-      </div>
-
-      <div>
-        <label for="image_box">
-          Image
-        </label>
-
-        <input type="text" id="image_box" name="query_image" value="<%= @the_photo.image %>">
-      </div>
-
-      <div>
-        <label for="owner_id_box">
-          Owner
-        </label>
-
-        <input type="text" id="owner_id_box" name="query_owner_id" value="<%= @the_photo.owner_id %>">
-      </div>
-
-      <div>
-        <label for="likes_count_box">
-          Likes count
-        </label>
-
-        <input type="text" id="likes_count_box" name="query_likes_count" value="<%= @the_photo.likes_count %>">
-      </div>
-
-      <button>
-        Update photo
-      </button>
-    </form>
-  </div>
-</div>
-
-<hr>
+<%= link_to "Back to Photos", "/photos" %>

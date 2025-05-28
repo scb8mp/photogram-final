@@ -95,9 +95,10 @@
           <%= a_photo.comments_count %>
         </td>
 
-        <td>
-          <%= a_photo.image %>
-        </td>
+       <td>
+  <%= image_tag a_photo.image_url if a_photo.image.present? %>
+</td>
+
 
         <td>
           <%= a_photo.owner_id %>

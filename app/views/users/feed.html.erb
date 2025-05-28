@@ -1,0 +1,11 @@
+<h1><%= @user.username %>'s Feed</h1>
+<p>Private: <%= @user.private %></p>
+<ul>
+  <% @feed_photos.each do |photo| %>
+    <li>
+      <p><%= photo.caption %></p> if photo.image.present? %><br>
+      <strong>Caption:</strong> <%= photo.caption %><br>
+      <strong>Posted by:</strong> <%= photo.owner.username %>
+    </li>
+  <% end %>
+</ul>

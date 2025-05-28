@@ -1,5 +1,46 @@
 <h1><%= @user.username %>'s Profile</h1>
+<% if current_user != @user %>
+  <% existing_request = FollowRequest.find_by(sender_id: current_user.id, recipient_id: @user.id) %>
 
-<p>Private: <%= @user.private %></p>
+  <% if existing_request.nil? %>
+    <form action="/insert_followrequest" method="post">
+      <input type="hidden" name="query_sender_id" value="<%= current_user.id %>">
+      <input type="hidden" name="query_recipient_id" value="<%= @user.id %>">
+      <input type="hidden" name="query_status" value="pending">
+      <button>Follow</button>
+    </form>
+  <% elsif existing_request.status == "pending" %>
+    Request sent
+    <%= link_to "Cancel", "/delete_followrequest/#{existing_request.id}", method: :get %>
+  <% elsif existing_request.status == "accepted" %>
+    <%= link_to "Unfollow", "/delete_followrequest/#{existing_request.id}", method: :get %>
+  <% end %>
+<% end %>
 <p>Follower count: <%= @user.followers.count %></p>
 
+<h3>Pending Follow Requests</h3>
+<ul>
+  <% @pending_follow_requests.each do |request| %>
+    <li><%= request.sender.username %></li>
+  <% end %>
+</ul>
+
+
+<p>Private?: <%= @user.private %>
+ ? "Yes" : "No" %></p>
+
+<p>Following: <%= FollowRequest.where(sender_id: @user.id, status: "accepted").count %></p>
+
+<p>Photos (<%= @user.photos.count %>)</p>
+
+
+
+<% @user.own_photos.each do |photo| %>
+  <div class="photo-block">
+    <p><%= photo.caption %></p>
+    <p>Posted <%= time_ago_in_words(photo.created_at) %> ago</p>
+    <p>Likes: <%= photo.likes_count %></p>
+    <%= image_tag photo.image_url if photo.image.present? %><br>
+    <%= link_to "Show details", "/photos/#{photo.id}" %>
+  </div>
+<% end %>

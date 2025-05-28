@@ -38,6 +38,7 @@ has_many :followed_users, through: :sent_follow_requests, source: :recipient
 
 has_many :received_follow_requests, class_name: "FollowRequest", foreign_key: "recipient_id"
 has_many :followers, through: :received_follow_requests, source: :sender
+has_many :own_photos, class_name: "Photo", foreign_key: "owner_id"
 
 def following?(other_user)
   FollowRequest.exists?(
